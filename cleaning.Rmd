@@ -1,0 +1,176 @@
+---
+title: "codes"
+author: "Nephi Chan"
+date: "12/3/2021"
+output: 
+  html_document:
+    theme: readable
+    highlight: breezedark
+    number_sections: yes
+    toc: yes
+    fig_width: 25
+    fig_height: 15
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(caret)
+library("dplyr")
+```
+
+```{r code}
+d_train <- read_csv("train.csv")
+d_test <- read_csv("test.csv")
+
+d_price <- d_train["SalePrice"]
+d_train <- d_train[-81]
+
+d <-rbind(d_train, d_test)
+
+
+summary(d)
+
+options(max.print=10000)
+
+d$MSSubClass <- factor(d$MSSubClass)
+d$MSZoning <- factor(d$MSZoning)
+d$Street <- factor(d$Street)
+d$Alley[is.na(d$Alley)] <- "None"
+d$Alley <- factor(d$Alley)
+d$LotShape <- factor(d$LotShape)
+d$LandContour <- factor(d$LandContour)
+d$Utilities <- factor(d$Utilities)
+d$LotConfig <- factor(d$LotConfig)
+d$LandSlope <- factor(d$LandSlope)
+d$Neighborhood <- factor(d$Neighborhood)
+d$Condition1 <- factor(d$Condition1)
+d$Condition2 <- factor(d$Condition2)
+d$BldgType <- factor(d$BldgType)
+d$HouseStyle <- factor(d$HouseStyle)
+d$OverallQual <- factor(d$OverallQual)
+d$OverallCond <- factor(d$OverallCond)
+d$YearBuilt <- factor(d$YearBuilt)
+d$YearRemodAdd <- factor(d$YearRemodAdd)
+d$RoofStyle <- factor(d$RoofStyle)
+d$RoofMatl <- factor(d$RoofMatl)
+d$Exterior1st <- factor(d$Exterior1st)
+d$Exterior2nd <- factor(d$Exterior2nd)
+d$MasVnrType <- factor(d$MasVnrType)
+d$ExterQual <- factor(d$ExterQual)
+d$ExterCond <- factor(d$ExterCond)
+d$Foundation <- factor(d$Foundation)
+d$BsmtQual[is.na(d$BsmtQual)] <- "None"
+d$BsmtQual <- factor(d$BsmtQual)
+#d$BsmtQual <- addNA(d$BsmtQual)
+d$BsmtCond[is.na(d$BsmtCond)] <- "None"
+d$BsmtCond <- factor(d$BsmtCond)
+
+#d$BsmtCond <- addNA(d$BsmtCond)
+d$BsmtExposure[is.na(d$BsmtExposure)] <- "None"
+d$BsmtExposure <- factor(d$BsmtExposure)
+#d$BsmtExposure <- addNA(d$BsmtExposure)
+d$BsmtFinType1[is.na(d$BsmtFinType1)] <- "None"
+d$BsmtFinType1 <- factor(d$BsmtFinType1)
+
+#d$BsmtFinType1 <- addNA(d$BsmtFinType1)
+d$BsmtFinType2[is.na(d$BsmtFinType2)] <- "None"
+d$BsmtFinType2 <- factor(d$BsmtFinType2)
+#d$BsmtFinType2 <- addNA(d$BsmtFinType2)
+
+d$Heating <- factor(d$Heating)
+d$HeatingQC <- factor(d$HeatingQC)
+d$CentralAir <- factor(d$CentralAir)
+d$Electrical <- factor(d$Electrical)
+d$KitchenQual <- factor(d$KitchenQual)
+d$Functional <- factor(d$Functional)
+d$FireplaceQu[is.na(d$FireplaceQu)] <- "None"
+d$FireplaceQu <- factor(d$FireplaceQu)
+#d$FireplaceQu <- addNA(d$FireplaceQu)
+d$GarageType[is.na(d$GarageType)] <- "None"
+d$GarageType <- factor(d$GarageType)
+#d$GarageType <- addNA(d$GarageType)
+
+d$GarageYrBlt[is.na(d$GarageYrBlt)] <- "None"
+d$GarageYrBlt <- factor(d$GarageYrBlt)
+d$GarageFinish[is.na(d$GarageFinish)] <- "None"
+d$GarageFinish <- factor(d$GarageFinish)
+#d$GarageFinish <- addNA(d$GarageFinish)
+d$GarageQual[is.na(d$GarageQual)] <- "None"
+d$GarageQual <- factor(d$GarageQual)
+#d$GarageQual <- addNA(d$GarageQual)
+d$GarageCond[is.na(d$GarageCond)] <- "None"
+d$GarageCond <- factor(d$GarageCond)
+#d$GarageCond <- addNA(d$GarageCond)
+
+d$PavedDrive <- factor(d$PavedDrive)
+d$PoolQC[is.na(d$PoolQC)] <- "None"
+d$PoolQC <- factor(d$PoolQC)
+#d$PoolQC <- addNA(d$PoolQC)
+#d$Fence <- addNA(d$Fence)
+d$Fence[is.na(d$Fence)] <- "None"
+d$Fence <- factor(d$Fence)
+d$MiscFeature[is.na(d$MiscFeature)] <- "None"
+d$MiscFeature <- factor(d$MiscFeature)
+#d$MiscFeature <- addNA(d$MiscFeature)
+
+d$MoSold <- factor(d$MoSold)
+d$YrSold <- factor(d$YrSold)
+d$SaleType <- factor(d$SaleType)
+d$SaleCondition <- factor(d$SaleCondition)
+
+
+summary(d)
+
+install.packages('missForest')
+library(missForest)
+
+install.packages('RANN')
+install.packages('VIM')
+library("VIM")
+d1 <- kNN(as.data.frame(d), variable = c("LotFrontage"), k = 6)
+summary(d1)
+d1 <- d1[-81]
+d1 <- d1[-10]
+
+summary(d1)
+
+d1$MasVnrType[is.na(d1$MasVnrType)] <- "None"
+d1$MasVnrArea[is.na(d1$MasVnrArea)] <- 0
+d1$BsmtFinSF1[is.na(d1$BsmtFinSF1)] <- 0
+d1$BsmtFinSF2[is.na(d1$BsmtFinSF2)] <- 0
+d1$BsmtUnfSF[is.na(d1$BsmtUnfSF)] <- 0
+d1$TotalBsmtSF[is.na(d1$TotalBsmtSF)] <- 0
+d1$BsmtFullBath[is.na(d1$BsmtFullBath)] <- 0
+d1$BsmtHalfBath[is.na(d1$BsmtHalfBath)] <- 0
+d1$GarageCars[is.na(d1$GarageCars)] <- 0
+d1$GarageArea[is.na(d1$GarageArea)] <- 0
+summary(d1)
+
+
+
+d2 <- d1[c(19,20,59)]
+d3 <- d1[-c(19,20,59)]
+
+
+d3_fimp <- missForest(as.data.frame(d3))
+
+d3 <- d3_fimp$ximp
+
+d4 <-cbind(d3, d2)
+
+summary(d4)
+
+d_train_cleaned <- d4[1:1460,]
+d_test_cleaned <- d4[1461:2919,]
+
+
+d_train_cleaned <- cbind(d_train_cleaned,d_price)
+d_train_cleaned <- d_train_cleaned[-1]
+d_test_cleaned <- d_test_cleaned[-1]
+summary(d_train_cleaned)
+
+```

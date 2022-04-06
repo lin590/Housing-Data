@@ -1,0 +1,196 @@
+---
+title: "project_house_pricing"
+author: "Nephi Chan"
+date: "11/11/2021"
+output: 
+  html_document:
+    theme: readable
+    highlight: breezedark
+    number_sections: yes
+    toc: yes
+    fig_width: 25
+    fig_height: 15
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(caret)
+```
+
+
+```{r - intro}
+
+d_train <- read_csv("train.csv")
+d_test <- read_csv("test.csv")
+
+summary(d_train)
+
+d_train$MSSubClass <- factor(d_train$MSSubClass)
+d_train$MSZoning <- factor(d_train$MSZoning)
+d_train$Street <- factor(d_train$Street)
+d_train$Alley <- factor(d_train$Alley)
+d_train$Alley <- addNA(d_train$Alley)
+d_train$LotShape <- factor(d_train$LotShape)
+d_train$LandContour <- factor(d_train$LandContour)
+d_train$Utilities <- factor(d_train$Utilities)
+d_train$LotConfig <- factor(d_train$LotConfig)
+d_train$LandSlope <- factor(d_train$LandSlope)
+d_train$Neighborhood <- factor(d_train$Neighborhood)
+d_train$Condition1 <- factor(d_train$Condition1)
+d_train$Condition2 <- factor(d_train$Condition2)
+d_train$BldgType <- factor(d_train$BldgType)
+d_train$HouseStyle <- factor(d_train$HouseStyle)
+d_train$OverallQual <- factor(d_train$OverallQual)
+d_train$OverallCond <- factor(d_train$OverallCond)
+d_train$RoofStyle <- factor(d_train$RoofStyle)
+d_train$RoofMatl <- factor(d_train$RoofMatl)
+d_train$Exterior1st <- factor(d_train$Exterior1st)
+d_train$Exterior2nd <- factor(d_train$Exterior2nd)
+d_train$MasVnrType <- factor(d_train$MasVnrType)
+d_train$ExterQual <- factor(d_train$ExterQual)
+d_train$ExterCond <- factor(d_train$ExterCond)
+d_train$Foundation <- factor(d_train$Foundation)
+d_train$BsmtQual <- factor(d_train$BsmtQual)
+d_train$BsmtQual <- addNA(d_train$BsmtQual)
+d_train$BsmtCond <- factor(d_train$BsmtCond)
+d_train$BsmtCond <- addNA(d_train$BsmtCond)
+d_train$BsmtExposure <- factor(d_train$BsmtExposure)
+d_train$BsmtExposure <- addNA(d_train$BsmtExposure)
+d_train$BsmtFinType1 <- factor(d_train$BsmtFinType1)
+d_train$BsmtFinType1 <- addNA(d_train$BsmtFinType1)
+d_train$BsmtFinType2 <- factor(d_train$BsmtFinType2)
+d_train$BsmtFinType2 <- addNA(d_train$BsmtFinType2)
+d_train$Heating <- factor(d_train$Heating)
+d_train$HeatingQC <- factor(d_train$HeatingQC)
+d_train$CentralAir <- factor(d_train$CentralAir)
+d_train$Electrical <- factor(d_train$Electrical)
+d_train$KitchenQual <- factor(d_train$KitchenQual)
+d_train$Functional <- factor(d_train$Functional)
+d_train$FireplaceQu <- factor(d_train$FireplaceQu)
+d_train$FireplaceQu <- addNA(d_train$FireplaceQu)
+d_train$GarageType <- factor(d_train$GarageType)
+d_train$GarageType <- addNA(d_train$GarageType)
+d_train$GarageFinish <- factor(d_train$GarageFinish)
+d_train$GarageFinish <- addNA(d_train$GarageFinish)
+d_train$GarageQual <- factor(d_train$GarageQual)
+d_train$GarageQual <- addNA(d_train$GarageQual)
+d_train$GarageCond <- factor(d_train$GarageCond)
+d_train$GarageCond <- addNA(d_train$GarageCond)
+d_train$PavedDrive <- factor(d_train$PavedDrive)
+d_train$PoolQC <- factor(d_train$PoolQC)
+d_train$PoolQC <- addNA(d_train$PoolQC)
+d_train$Fence <- factor(d_train$Fence)
+d_train$Fence <- addNA(d_train$Fence)
+d_train$MiscFeature <- factor(d_train$MiscFeature)
+d_train$MiscFeature <- addNA(d_train$MiscFeature)
+d_train$MoSold <- factor(d_train$MoSold)
+d_train$YrSold <- factor(d_train$YrSold)
+d_train$SaleType <- factor(d_train$SaleType)
+d_train$SaleCondition <- factor(d_train$SaleCondition)
+d_train$GarageYrBlt <- factor(d_train$GarageYrBlt)
+d_train$YearBuilt <- factor(d_train$YearBuilt)
+d_train$YearRemodAdd <- factor(d_train$YearRemodAdd)
+
+
+options(max.print=10000)
+
+lm(log(SalePrice) ~ log(`1stFlrSF`) + log(LotArea) + RoofMatl + OverallQual + MSZoning, data = d_train) %>% 
+  summary
+
+
+d_test$MSSubClass <- factor(d_test$MSSubClass)
+d_test$MSZoning <- factor(d_test$MSZoning)
+d_test$Street <- factor(d_test$Street)
+d_test$Alley <- factor(d_test$Alley)
+d_test$Alley <- addNA(d_test$Alley)
+d_test$LotShape <- factor(d_test$LotShape)
+d_test$LandContour <- factor(d_test$LandContour)
+d_test$Utilities <- factor(d_test$Utilities)
+d_test$LotConfig <- factor(d_test$LotConfig)
+d_test$LandSlope <- factor(d_test$LandSlope)
+d_test$Neighborhood <- factor(d_test$Neighborhood)
+d_test$Condition1 <- factor(d_test$Condition1)
+d_test$Condition2 <- factor(d_test$Condition2)
+d_test$BldgType <- factor(d_test$BldgType)
+d_test$HouseStyle <- factor(d_test$HouseStyle)
+d_test$OverallQual <- factor(d_test$OverallQual)
+d_test$OverallCond <- factor(d_test$OverallCond)
+d_test$RoofStyle <- factor(d_test$RoofStyle)
+d_test$RoofMatl <- factor(d_test$RoofMatl)
+d_test$Exterior1st <- factor(d_test$Exterior1st)
+d_test$Exterior2nd <- factor(d_test$Exterior2nd)
+d_test$MasVnrType <- factor(d_test$MasVnrType)
+d_test$ExterQual <- factor(d_test$ExterQual)
+d_test$ExterCond <- factor(d_test$ExterCond)
+d_test$Foundation <- factor(d_test$Foundation)
+d_test$BsmtQual <- factor(d_test$BsmtQual)
+d_test$BsmtQual <- addNA(d_test$BsmtQual)
+d_test$BsmtCond <- factor(d_test$BsmtCond)
+d_test$BsmtCond <- addNA(d_test$BsmtCond)
+d_test$BsmtExposure <- factor(d_test$BsmtExposure)
+d_test$BsmtExposure <- addNA(d_test$BsmtExposure)
+d_test$BsmtFinType1 <- factor(d_test$BsmtFinType1)
+d_test$BsmtFinType1 <- addNA(d_test$BsmtFinType1)
+d_test$BsmtFinType2 <- factor(d_test$BsmtFinType2)
+d_test$BsmtFinType2 <- addNA(d_test$BsmtFinType2)
+d_test$Heating <- factor(d_test$Heating)
+d_test$HeatingQC <- factor(d_test$HeatingQC)
+d_test$CentralAir <- factor(d_test$CentralAir)
+d_test$Electrical <- factor(d_test$Electrical)
+d_test$KitchenQual <- factor(d_test$KitchenQual)
+d_test$Functional <- factor(d_test$Functional)
+d_test$FireplaceQu <- factor(d_test$FireplaceQu)
+d_test$FireplaceQu <- addNA(d_test$FireplaceQu)
+d_test$GarageType <- factor(d_test$GarageType)
+d_test$GarageType <- addNA(d_test$GarageType)
+d_test$GarageFinish <- factor(d_test$GarageFinish)
+d_test$GarageFinish <- addNA(d_test$GarageFinish)
+d_test$GarageQual <- factor(d_test$GarageQual)
+d_test$GarageQual <- addNA(d_test$GarageQual)
+d_test$GarageCond <- factor(d_test$GarageCond)
+d_test$GarageCond <- addNA(d_test$GarageCond)
+d_test$PavedDrive <- factor(d_test$PavedDrive)
+d_test$PoolQC <- factor(d_test$PoolQC)
+d_test$PoolQC <- addNA(d_test$PoolQC)
+d_test$Fence <- factor(d_test$Fence)
+d_test$Fence <- addNA(d_test$Fence)
+d_test$MiscFeature <- factor(d_test$MiscFeature)
+d_test$MiscFeature <- addNA(d_test$MiscFeature)
+d_test$MoSold <- factor(d_test$MoSold)
+d_test$YrSold <- factor(d_test$YrSold)
+d_test$SaleType <- factor(d_test$SaleType)
+d_test$SaleCondition <- factor(d_test$SaleCondition)
+d_test$GarageYrBlt <- factor(d_test$GarageYrBlt)
+d_test$YearBuilt <- factor(d_test$YearBuilt)
+d_test$YearRemodAdd <- factor(d_test$YearRemodAdd)
+
+install.packages('missForest')
+library(missForest)
+
+d_test_selected <- d_test[c("Id","1stFlrSF" , "LotArea" , "MSZoning" , "OverallQual" , "RoofMatl")]
+
+
+d_test_fimp <- missForest(as.data.frame(d_test_selected))
+
+(model <- train(log(SalePrice) ~ log(`1stFlrSF`) + log(LotArea) + RoofMatl + OverallQual + MSZoning, method = "lm", data = d_train))
+
+predictions <- predict(model, newdata = d_test_fimp$ximp)
+
+predictions <- exp(predictions)
+
+
+sample_predictions <- data.frame(Id = d_test$Id, SalePrice = predictions)
+
+
+write.csv(sample_predictions, "sample_predictions_1.csv")
+
+
+
+
+```
+
+
